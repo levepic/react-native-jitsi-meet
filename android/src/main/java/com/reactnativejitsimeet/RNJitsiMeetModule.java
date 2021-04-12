@@ -32,7 +32,7 @@ public class RNJitsiMeetModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void call(String url, ReadableMap userInfo) {
+    public void call(String url, ReadableMap userInfo, ReadableMap params) {
         UiThreadUtil.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -53,11 +53,40 @@ public class RNJitsiMeetModule extends ReactContextBaseJavaModule {
                             }
                           }
                     }
-                    RNJitsiMeetConferenceOptions options = new RNJitsiMeetConferenceOptions.Builder()
+                    RNJitsiMeetConferenceOptions.Builder builder = new RNJitsiMeetConferenceOptions.Builder()
                             .setRoom(url)
                             .setAudioOnly(false)
-                            .setUserInfo(_userInfo)
-                            .build();
+                            .setUserInfo(_userInfo);
+
+                    
+                   
+                        
+
+                    if (params != null) {
+                        if (params.hasKey("jwt")) {
+                            builder.setToken(params.getString("jwt"));
+                        }
+                        if (params.hasKey("subject")) {
+                            builder.setSubject(params.getString("subject"));
+                        }
+                        if (params.hasKey("chat.enabled")) {
+                            builder.setFeatureFlag("add-people.enabled", false);
+                            builder.setFeatureFlag("calendar.enabled", false);
+                            builder.setFeatureFlag("invite.enabled", false);
+                            builder.setFeatureFlag("ios.recording.enabled", false);
+                            builder.setFeatureFlag("kick-out.enabled", false);
+                            builder.setFeatureFlag("meeting-name.enabled", false);
+                            builder.setFeatureFlag("meeting-password.enabled", false);
+                            builder.setFeatureFlag("recording.enabled", false);
+                            builder.setFeatureFlag("server-url-change.enabled", false);
+                            //builder.setFeatureFlag("toolbox.enabled", false);
+                            builder.setFeatureFlag("video-share.enabled", false);
+                            builder.setFeatureFlag("calendar.enabled", false);
+                            builder.setFeatureFlag("chat.enabled", false);
+                        }
+                    }
+                    RNJitsiMeetConferenceOptions options = builder.build();
+
                     mJitsiMeetViewReference.getJitsiMeetView().join(options);
                 }
             }
